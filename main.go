@@ -1,80 +1,69 @@
 package main
 
 import (
-    "cdk.tf/go/stack/generated/dmacvicar/libvirt/domain"
-    "cdk.tf/go/stack/generated/dmacvicar/libvirt/volume"
-    "cdk.tf/go/stack/generated/dmacvicar/libvirt/cloudinitdisk"
-    "github.com/hashicorp/terraform-cdk-go/cdktf"
-    "github.com/aws/constructs-go/constructs/v10"
+    "fmt"
+
+    cdktf "github.com/hashicorp/terraform-cdk-go/cdktf"
+    libvirt "github.com/dmacvicar/terraform-provider-libvirt/cdktf/provider/libvirt"
+    constructs "github.com/hashicorp/constructs-go/constructs/v10"
 )
 
-type MyStackConfig struct {
+type MyStack struct {
     cdktf.TerraformStack
 }
 
-func NewMyStack(scope constructs.Construct, id string) cdktf.TerraformStack {
+func NewMyStack(scope constructs.Construct, id string, cfg *MyStackConfig) cdktf.TerraformStack {
     stack := cdktf.NewTerraformStack(scope, &id)
 
-    provider := domain.NewLibvirtProvider(stack, cdktf.String("libvirt"), &domain.LibvirtProviderConfig{
-        Uri: cdktf.String("qemu:///system"),
+    libvirt.NewLibvirtProvider(stack, jsii.String("libvirt"), &libvirt.LibvirtProviderConfig{
+        Uri: jsii.String("qemu:///system"),
     })
 
-    vol := volume.NewVolume(stack, cdktf.String("ubuntu_qcow2"), &volume.VolumeConfig{
-        Name:   cdktf.String("vm1-ubuntu-disk.qcow2"),
-        Source: cdktf.String("iso-images/jammy-server-cloudimg-amd64.img"),
-        Format: cdktf.String("qcow2"),
-        Size:   cdktf.Number(10737418240),
-        Provider: provider,
-    })
+    for key, vm := range cfg.Vms {
+        libvirt.NewVolume(stack, jsii.String(fmt.Sprintf("%s-disk", key)), &libvirt.VolumeConfig{
+            Name:   jsii.String(fmt.Sprintf("%s-ubuntu-disk.qcow2", key)),
+            Source: jsii.String(cfg.Image),
+            Format: jsii.String("qcow2"),
+        })
 
-    ci := cloudinitdisk.NewCloudinitDisk(stack, cdktf.String("commoninit"), &cloudinitdisk.CloudinitDiskConfig{
-        Name:          cdktf.String("vm1-commoninit.iso"),
-        UserData:      cdktf.String(stringFromFile("config/cloud_init.cfg")),
-        NetworkConfig: cdktf.String(stringFromFile("config/network_config.yml")),
-        Provider:      provider,
-    })
+        cloudinit := libvirt.NewCloudInitDisk(stack, jsii.String(fmt.Sprintf("%s-cloudinit", key)), &libvirt.CloudInitDiskConfig{
+            Name: jsii.String(fmt.Sprintf("%s-commoninit.iso", key)),
+            UserData: cdktf.Fn_Templatefile(jsii.String("templates/cloud_init.cfg.tpl"), &map[string]interface{}{
+                "sshKeys": cfg.SshKeys,
+            }),
+            NetworkConfig: cdktf.Fn_Templatefile(jsii.String("templates/network_config.yml.tpl"), &map[string]interface{}{
+                "ip": vm.IpAddress,
+            }),
+        })
 
-    domain.NewDomain(stack, cdktf.String("domain_ubuntu"), &domain.DomainConfig{
-        Name:   cdktf.String("vm1"),
-        Memory: cdktf.Number(2048),
-        Vcpu:   cdktf.Number(2),
-        Cloudinit: ci.Id(),
-        NetworkInterface: []domain.DomainNetworkInterface{
-            {
-                NetworkName:   cdktf.String("default"),
-                WaitForLease:  cdktf.Bool(true),
-                Hostname:      cdktf.String("vm1"),
-            },
-        },
-        Disk: []domain.DomainDisk{
-            {
-                VolumeId: vol.Id(),
-            },
-        },
-        Graphics: []domain.DomainGraphics{
-            {
-                Type:       cdktf.String("spice"),
-                ListenType: cdktf.String("address"),
-                Autoport:   cdktf.Bool(true),
-            },
-        },
-    })
+        libvirt.NewDomain(stack, jsii.String(fmt.Sprintf("%s-domain", key)), &libvirt.DomainConfig{
+            Name:   jsii.String(vm.Hostname),
+            Memory: jsii.Number(float64(vm.Memory)),
+            Vcpu:   jsii.Number(float64(vm.Vcpu)),
+            Cloudinit: cloudinit.Id(),
+
+            NetworkInterface: []*libvirt.DomainNetworkInterface{{
+                NetworkName:   jsii.String("default"),
+                WaitForLease:  jsii.Bool(true),
+                Hostname:      jsii.String(vm.Hostname),
+            }},
+
+            Disk: []*libvirt.DomainDisk{{
+                VolumeId: jsii.String(fmt.Sprintf("%s-ubuntu-disk.qcow2", key)),
+            }},
+        })
+    }
 
     return stack
 }
 
-func stringFromFile(path string) string {
-    data, err := os.ReadFile(path)
+func main() {
+    cfg, err := LoadConfig("config.yaml")
     if err != nil {
         panic(err)
     }
-    return string(data)
-}
 
-func main() {
     app := cdktf.NewApp(nil)
-
-    NewMyStack(app, "libvirt-vms")
-
+    NewMyStack(app, "cdktf-libvirt-go", cfg)
     app.Synth()
 }
