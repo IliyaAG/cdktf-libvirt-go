@@ -1,0 +1,7 @@
+image: "/home/iliya/vm_templates/jammy-server-cloudimg-amd64.img"
+
+sshKeys:
+  - "ssh-ed25519 AAAAC3Nza... arman@pc"
+
+count: 3
+vms: {}
