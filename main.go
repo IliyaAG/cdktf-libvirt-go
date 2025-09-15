@@ -28,10 +28,10 @@ func NewMyStack(scope constructs.Construct, id string, cfg *MyStackConfig) cdktf
 
         cloudinit := libvirt.NewCloudInitDisk(stack, jsii.String(fmt.Sprintf("%s-cloudinit", key)), &libvirt.CloudInitDiskConfig{
             Name: jsii.String(fmt.Sprintf("%s-commoninit.iso", key)),
-            UserData: cdktf.Fn_Templatefile(jsii.String("templates/cloud_init.cfg.tpl"), &map[string]interface{}{
+            UserData: cdktf.Fn_Templatefile(jsii.String("templates/cloud-init.cfg.tpl"), &map[string]interface{}{
                 "sshKeys": cfg.SshKeys,
             }),
-            NetworkConfig: cdktf.Fn_Templatefile(jsii.String("templates/network_config.yml.tpl"), &map[string]interface{}{
+            NetworkConfig: cdktf.Fn_Templatefile(jsii.String("templates/netplan.yml.tpl"), &map[string]interface{}{
                 "ip": vm.IpAddress,
             }),
         })
