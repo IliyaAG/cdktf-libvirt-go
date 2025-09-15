@@ -3,5 +3,5 @@ image: "/home/iliya/vm_templates/jammy-server-cloudimg-amd64.img"
 sshKeys:
   - "AAAAB3NzaC1yc2EAAAADAQABAAABgQCPZVkA9f6DAjMwpdhZM7h/NWC1wIEX1AXe4VqIMrOKbW98nzjxJglQkALccfvpVLn5NuESOuMofKYvaJ1+/hWN+7OlaglTHYePI1E1dUpx3r9cHHSZpAhd8XSGUQPhZvXj15kv9SjJ1cs3GU0803GzEGHdzqYiB9Lmm+EAZvnv3ljKp26v9M3lqt18+gGTaM7TPkoiizQoxCV9GEbo3CTfrtUpow0KKnZHGabhITGI8oBf3LzjJx2/qIwN+/MZeYqmPQS+fvEMxnwcGzjCh6RjEJk0xK2CpAM17BiVc+arEIr5HLxjpQLhCkCf1X+tiWQ+28SQ5B+Cn+T9nqN/WMmg2jbx3eIxYcbaNAaBm1y9ARLiipg7fj4FO+iAhyqpo6Tjkot3tU61w1QZ+/p/WRZ9bDNZY+c2tKjX4k+MTyE4ras8Nkp9DF/n+q1OBuD4CF1jaUeaOW5iAoq4ZsOO3PqAekIQtOjq68Gmq1BFKGVQoxYe4AHnSWueNNUaym0J170= root@masmasak"
 
-count: 3
+count: 0
 vms: {}
