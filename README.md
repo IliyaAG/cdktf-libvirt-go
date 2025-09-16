@@ -19,3 +19,22 @@ Before using this project, make sure you have:
 
 ## Quick start
 
+#### Install tools
+
+- clone the project:
+
+```bash
+git clone https://github.com/IliyaAG/cdktf-libvirt-go.git
+```
+
+- Making the preparing file executable:
+
+```bash
+chmod +x cdktf-preparing.sh
+```
+
+- Run it:
+
+```bash
+./cdktf-preparing.sh
+```
