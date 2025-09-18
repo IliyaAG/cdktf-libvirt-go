@@ -67,4 +67,7 @@ else
   echo -e "${GREEN} -> CDKTF CLI already installed ($(cdktf --version))${RESET}"
 fi
 
+
+
+
 echo -e "${GREEN} -> Setup complete! You can now use 'cdktf' command.${RESET}"
