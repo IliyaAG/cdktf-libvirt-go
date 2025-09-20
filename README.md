@@ -2,6 +2,8 @@
 
 A project that combines **[CDK for Terraform (CDKTF)](https://developer.hashicorp.com/terraform/cdktf)** with **Go** and the **Libvirt provider** to provision and manage virtual machines (VMs) locally on Linux.
 
+![cdktf mind map](images/cdktf.jpg)
+
 ---
 
 ## 📖 Overview
