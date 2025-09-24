@@ -10,7 +10,14 @@ A project that combines **[CDK for Terraform (CDKTF)](https://developer.hashicor
 This project lets you define and deploy virtual machines using **Go code + YAML configuration**.  
 
 Think of it as **Infrastructure as Code**, but with the flexibility of Go and the power of Terraform.  
+I created this project to create my own test and training environment faster and easier. If needed, you can define the specifications of the machines you want, such as:
+- their number
+- hardware resources
+- base image
 
+in the **config.yml** file.
+
+There is also an option for when you need an experimental environment very quickly, you can put the number of machines in the **count** variable so that cdktf creates the same number of machines with the default variables and fills the file with the machine specifications.
 ---
 
 ## ⚙️ Prerequisites
